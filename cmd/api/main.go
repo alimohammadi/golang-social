@@ -8,6 +8,8 @@ import (
 	"github.com/alimohammadi/golan-social.git/internal/store"
 )
 
+const version = "0.1.1"
+
 func main() {
 	cfg := config{
 		addr: env.GetString("ADDR", ":8081"),
