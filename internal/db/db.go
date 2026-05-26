@@ -26,7 +26,6 @@ func New(
 	}
 	db.SetConnMaxIdleTime(time.Duration(duration))
 
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
