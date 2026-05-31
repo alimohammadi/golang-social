@@ -3,7 +3,7 @@ services:
     image: postgres:16.3
     container_name: postgres_db
     environment:
-      - POSTGRES_DB=social
+      - POSTGRES_DB=socialnetwork
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=adminpassword
     volumes:
