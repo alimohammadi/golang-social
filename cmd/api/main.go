@@ -12,13 +12,14 @@ const version = "0.1.1"
 
 func main() {
 	cfg := config{
-		addr: env.GetString("ADDR", ":8081"),
+		addr: env.GetString("ADDR", ":8084"),
 		db: dbConfing{
 			addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost/social?sslmode=disable"),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
 			maxIdleConns: env.GetInt("MAX_IDLE_CONNS", 30),
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_Time", "15m"),
 		},
+		env: env.GetString("ENV", "development"),
 	}
 
 	db, err := db.New(

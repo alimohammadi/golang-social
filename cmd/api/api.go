@@ -43,16 +43,21 @@ func (app *application) mount() *chi.Mux {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	
 	r.Use()
 
 	r.Route(
 		"/v1", func(r chi.Router) {
 			r.Get("/health", app.healthCheckHandler)
+
+			r.Route("/posts", func(r chi.Router) {
+				r.Post("/", app.createPostHandler)
+				r.Route("/{postID}", func (r chi.Router){
+					r.Get("/", app.getPostHandler)
+					// r.Patch("/", )
+				})
+			})
 		},
 	)
-
-	// posts
 	// users
 	// auth
 	return r
