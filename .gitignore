@@ -39,3 +39,7 @@ coverage.out
 # Build output
 bin/
 dist/
+
+# Temp and env files
+.envrc
+tmp/main
