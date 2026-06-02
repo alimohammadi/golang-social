@@ -9,7 +9,7 @@ type User struct {
 	ID        int64  `json:"id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
-	Password  int64  `json:"-"`
+	Password  string `json:"-"`
 	CreatedAt string `json:"created_at"`
 }
 
@@ -22,7 +22,7 @@ func (s *UserStore) Create(ctx context.Context, user *User) error {
 		INSERT INTO users (username, password, email)
 		VALUES ($1, $2, $3) RETURNING id, created_at
 	`
-	
+
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
