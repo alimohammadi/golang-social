@@ -1,0 +1,2 @@
+-- Create the extention and indexes for full-text search
+-- Check article https://nillburklery.com/ 
