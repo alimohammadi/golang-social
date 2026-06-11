@@ -8,11 +8,31 @@ import (
 	"github.com/alimohammadi/golan-social.git/internal/store"
 )
 
-const version = "0.1.1"
+const version = "0.0.1"
+
+//	@title			GopherSocial API
+//	@description	API for GopherSocial, a social network for gopher
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@BasePath	/v1
+//
+
+//	@securityDefinitions.apiKey	ApiKeyAuth
+//	@in							header
+//	@name						Authorization
+//	@description
 
 func main() {
 	cfg := config{
-		addr: env.GetString("ADDR", ":8084"),
+		addr:   env.GetString("ADDR", ":8084"),
+		apiURL: env.GetString("EXTERNAL_URL", "localhost:8084"),
 		db: dbConfing{
 			addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost/socialnetwork?sslmode=disable"),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
