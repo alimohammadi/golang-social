@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -11,12 +10,14 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 )
 
 type application struct {
 	config config
 	store  store.Storage
 	db     dbConfing
+	logger *zap.SugaredLogger
 }
 
 type dbConfing struct {
@@ -101,7 +102,7 @@ func (app *application) run(mux *chi.Mux) error {
 		IdleTimeout:  time.Minute,
 	}
 
-	log.Print("server is started at $s", app.config.addr)
+	app.logger.Infow("server has started", "addr", app.config.addr, "env", app.config.env)
 
 	return srv.ListenAndServe()
 }
