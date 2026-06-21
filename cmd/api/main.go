@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/alimohammadi/golan-social.git/internal/db"
 	"github.com/alimohammadi/golan-social.git/internal/env"
 	"github.com/alimohammadi/golan-social.git/internal/store"
@@ -39,6 +41,9 @@ func main() {
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_Time", "15m"),
 		},
 		env: env.GetString("ENV", "development"),
+		mail: mailConfig{
+			exp: time.Hour * 24 * 3, // 3 days
+		},
 	}
 
 	// Logger

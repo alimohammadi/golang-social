@@ -10,6 +10,8 @@ import (
 var (
 	ErrNotFound          = errors.New("resource not found")
 	ErrConflict          = errors.New("resource already exists")
+	ErrDuplicateEmail    = errors.New("a user with that email already exists")
+	ErrDuplicateUsername = errors.New("a user with that username already exists")
 	QueryTimeoutDuration = time.Second * 5
 )
 
@@ -25,8 +27,13 @@ type Storage struct {
 	}
 
 	Users interface {
-		Create(context.Context, *User) error
+		Create(context.Context, *sql.Tx, *User) error
 		GetByID(context.Context, int64) (*User, error)
+		CreateAndInvite(
+			ctx context.Context,
+			user *User, token string,
+			invitationExp time.Duration,
+		) error
 	}
 
 	Comments interface {
@@ -47,4 +54,36 @@ func NewStorage(db *sql.DB) Storage {
 		Comments:  &CommentStore{db},
 		Followers: &FollowerStore{db},
 	}
+}
+
+type rowQuerier interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}
+
+func dbOrTx(db *sql.DB, tx *sql.Tx) rowQuerier {
+	if tx != nil {
+		return tx
+	}
+	return db
+}
+
+// withTx is a helper function that wraps a function in a database transaction. It begins a transaction, executes the provided function, and commits or rolls back the transaction based on whether an error occurred.
+func withTx(db *sql.DB, ctx context.Context, fn func(*sql.Tx) error) error {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := fn(tx); err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return errors.New("tx rollback error: " + rbErr.Error() + ", original error: " + err.Error())
+		}
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
