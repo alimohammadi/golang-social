@@ -5,6 +5,7 @@ import (
 
 	"github.com/alimohammadi/golan-social.git/internal/db"
 	"github.com/alimohammadi/golan-social.git/internal/env"
+	"github.com/alimohammadi/golan-social.git/internal/mailer"
 	"github.com/alimohammadi/golan-social.git/internal/store"
 	"go.uber.org/zap"
 )
@@ -42,8 +43,13 @@ func main() {
 		},
 		env: env.GetString("ENV", "development"),
 		mail: mailConfig{
-			exp: time.Hour * 24 * 3, // 3 days
+			exp:       time.Hour * 24 * 3, // 3 days
+			fromEmail: env.GetString("FROM_EMAIL", ""),
+			sendGrid: sendGridConfig{
+				apiKey: env.GetString("SENDGRID_API_KEY", ""),
+			},
 		},
+		frontendURL: env.GetString("FRONTEND_URL", "http://localhost:4000"),
 	}
 
 	// Logger
@@ -67,10 +73,16 @@ func main() {
 
 	store := store.NewStorage(db)
 
+	mailer := mailer.NewSendgrid(
+		cfg.mail.sendGrid.apiKey,
+		cfg.mail.fromEmail,
+	)
+
 	app := &application{
 		config: cfg,
 		store:  store,
 		logger: logger,
+		mailer: mailer,
 	}
 
 	mux := app.mount()

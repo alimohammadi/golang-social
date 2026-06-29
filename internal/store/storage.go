@@ -35,6 +35,7 @@ type Storage struct {
 			invitationExp time.Duration,
 		) error
 		Activate(context.Context, string) error
+		Delete(context.Context, int64) error
 	}
 
 	Comments interface {

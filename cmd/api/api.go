@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/alimohammadi/golan-social.git/docs"
+	"github.com/alimohammadi/golan-social.git/internal/mailer"
 	"github.com/alimohammadi/golan-social.git/internal/store"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -18,6 +19,7 @@ type application struct {
 	store  store.Storage
 	db     dbConfing
 	logger *zap.SugaredLogger
+	mailer mailer.Client
 }
 
 type dbConfing struct {
@@ -28,15 +30,22 @@ type dbConfing struct {
 }
 
 type config struct {
-	addr   string
-	db     dbConfing
-	env    string
-	apiURL string
-	mail   mailConfig
+	addr        string
+	db          dbConfing
+	env         string
+	apiURL      string
+	mail        mailConfig
+	frontendURL string
 }
 
 type mailConfig struct {
-	exp time.Duration
+	exp       time.Duration
+	fromEmail string
+	sendGrid  sendGridConfig
+}
+
+type sendGridConfig struct {
+	apiKey string
 }
 
 func (app *application) mount() *chi.Mux {
