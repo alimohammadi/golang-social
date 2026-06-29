@@ -15,5 +15,5 @@ type Client interface {
 		templateFile, username, email string,
 		data any,
 		isSandBox bool,
-	) error
+	) (int, error)
 }

@@ -95,7 +95,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// send mail
-	err = app.mailer.Send(
+	status, err := app.mailer.Send(
 		mailer.UserWelcomeTemplate,
 		user.Username,
 		user.Email,
@@ -114,6 +114,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		app.internalServerError(w, r, err)
 		return
 	}
+	app.logger.Infow("Email sent", "status code", status)
 
 	if err := app.jsonResponse(w, http.StatusCreated, userWithToken); err != nil {
 		app.internalServerError(w, r, err)
