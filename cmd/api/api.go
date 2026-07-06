@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/alimohammadi/golan-social.git/docs"
+	"github.com/alimohammadi/golan-social.git/internal/auth"
 	"github.com/alimohammadi/golan-social.git/internal/env"
 	"github.com/alimohammadi/golan-social.git/internal/mailer"
 	"github.com/alimohammadi/golan-social.git/internal/store"
@@ -17,11 +18,12 @@ import (
 )
 
 type application struct {
-	config config
-	store  store.Storage
-	db     dbConfing
-	logger *zap.SugaredLogger
-	mailer mailer.Client
+	config        config
+	store         store.Storage
+	db            dbConfing
+	logger        *zap.SugaredLogger
+	mailer        mailer.Client
+	authenticator auth.Authenticator
 }
 
 type dbConfing struct {
@@ -38,6 +40,23 @@ type config struct {
 	apiURL      string
 	mail        mailConfig
 	frontendURL string
+	auth        authConfig
+}
+
+type authConfig struct {
+	basic basicConfig
+	token tokenConfig
+}
+
+type tokenConfig struct {
+	secret string
+	exp    time.Duration
+	iss    string
+}
+
+type basicConfig struct {
+	user string
+	pass string
 }
 
 type mailConfig struct {
@@ -73,7 +92,6 @@ func (app *application) mount() *chi.Mux {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-
 	r.Route(
 		"/v1", func(r chi.Router) {
 			r.Get("/health", app.healthCheckHandler)
@@ -84,6 +102,8 @@ func (app *application) mount() *chi.Mux {
 			))
 
 			r.Route("/posts", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
+
 				r.Post("/", app.createPostHandler)
 				r.Route("/{postID}", func(r chi.Router) {
 					r.Use(app.postsContextMiddleware)
@@ -98,7 +118,7 @@ func (app *application) mount() *chi.Mux {
 				r.Put("/activate/{token}", app.activateUserHandler)
 
 				r.Route("/{userID}", func(r chi.Router) {
-					r.Use(app.userContextMiddleware)
+					r.Use(app.AuthTokenMiddleware)
 
 					r.Get("/", app.getUserHandler)
 					r.Put("/follow", app.followUserHandler)
