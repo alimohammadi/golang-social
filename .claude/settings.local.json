@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(printenv)",
+      "Bash(docker exec *)",
+      "Bash(go build *)",
+      "Bash(git add *)",
+      "Bash(migrate -path=\"./cmd/migrate/migrations\" -database=\"postgres://admin:adminpassword@localhost/socialnetwork?sslmode=disable\" force 8)",
+      "Bash(make migrate-up *)",
+      "Bash(git -C \"/Users/apple/Downloads/Udemy - Backend Engineering with Go 2025-3/my-codes/Scaffolding API Server\" add cmd/api/api.go cmd/api/main.go cmd/api/auth.go go.mod go.sum internal/db/seed.go internal/store/storage.go internal/store/users.go cmd/migrate/migrations/000009_add_invitation.down.sql cmd/migrate/migrations/000009_add_invitation.up.sql cmd/migrate/migrations/000010_add_actived_to_user.down.sql cmd/migrate/migrations/000010_add_actived_to_user.up.sql cmd/migrate/migrations/000011_add_expiry_to_invitations.down.sql cmd/migrate/migrations/000011_add_expiry_to_invitations.up.sql)",
+      "Bash(git -C '/Users/apple/Downloads/Udemy - Backend Engineering with Go 2025-3/my-codes/Scaffolding API Server' commit -m ' *)",
+      "Bash(git -C \"/Users/apple/Downloads/Udemy - Backend Engineering with Go 2025-3/my-codes/Scaffolding API Server\" push)"
+    ]
+  }
+}
