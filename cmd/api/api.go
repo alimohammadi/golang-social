@@ -10,6 +10,7 @@ import (
 	"github.com/alimohammadi/golan-social.git/internal/env"
 	"github.com/alimohammadi/golan-social.git/internal/mailer"
 	"github.com/alimohammadi/golan-social.git/internal/store"
+	"github.com/alimohammadi/golan-social.git/internal/store/cache"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -24,6 +25,7 @@ type application struct {
 	logger        *zap.SugaredLogger
 	mailer        mailer.Client
 	authenticator auth.Authenticator
+	cacheStorage  cache.Storage
 }
 
 type dbConfing struct {
@@ -41,6 +43,14 @@ type config struct {
 	mail        mailConfig
 	frontendURL string
 	auth        authConfig
+	redisCfg    redisConfig
+}
+
+type redisConfig struct {
+	addr     string
+	password string
+	db       int
+	enabled  bool
 }
 
 type authConfig struct {
@@ -107,8 +117,8 @@ func (app *application) mount() *chi.Mux {
 				r.Post("/", app.createPostHandler)
 				r.Route("/{postID}", func(r chi.Router) {
 					r.Use(app.postsContextMiddleware)
-
 					r.Get("/", app.getPostHandler)
+
 					r.Patch("/", app.checkPostOwnership("moderator", app.updatePostHandler))
 					r.Delete("/", app.checkPostOwnership("admin", app.deletePostHandler))
 				})
